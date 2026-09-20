@@ -57,6 +57,6 @@ app.post("/check", async (req,res)=>{
   try { const started=Date.now(); const result=await inspect(u.toString()); res.json({ok:true,checkedAt:new Date().toISOString(),elapsedMs:Date.now()-started,...result}); }
   catch(e) { console.error(e); res.status(502).json({ok:false,error:e?.message||"Browser check failed"}); }
 });
-const server=app.listen(PORT,()=>console.log(`Listening on http://localhost:${PORT} | HEADLESS=${HEADLESS}`));
+const server=app.listen(PORT, "0.0.0.0",()=>console.log(`Listening on http://localhost:${PORT} | HEADLESS=${HEADLESS}`));
 async function shutdown(){ try{if(browserPromise)(await browserPromise).close();}finally{server.close(()=>process.exit(0));} }
 process.on("SIGINT",shutdown); process.on("SIGTERM",shutdown);
