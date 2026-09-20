@@ -1,0 +1,28 @@
+# Android Studio
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Build
+.gradle/
+build/
+*/build/
+
+# Local configuration
+local.properties
+
+# Generated files
+.cxx/
+.externalNativeBuild/
+
+# APKs
+*.apk
+*.aab
+
+# Google services
+google-services.json
+
+# OS files
+.DS_Store
+Thumbs.db
