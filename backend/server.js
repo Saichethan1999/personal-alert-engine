@@ -7,9 +7,11 @@ app.use(express.json({ limit: "20kb" }));
 const PORT = Number(process.env.PORT || 8787);
 const API_KEY = (process.env.CHECK_API_KEY || "").trim();
 const HEADLESS = String(process.env.HEADLESS || "false").toLowerCase() === "true";
+console.log(`Starting server on port ${PORT} | HEADLESS=${HEADLESS}`);
 let browserPromise;
 
 function authorized(req) {
+  console.log(`Authorization check: API_KEY is ${API_KEY ? "set" : "not set"}`, `Provided Authorization: ${req.headers.authorization || "none"}`);
   return !API_KEY || req.headers.authorization === `Bearer ${API_KEY}`;
 }
 
@@ -40,9 +42,9 @@ async function inspect(url) {
     return await page.evaluate(() => {
       const visible = el => { const s=getComputedStyle(el), r=el.getBoundingClientRect(); return s.display!=="none" && s.visibility!=="hidden" && r.width>0 && r.height>0; };
       const controls=[...document.querySelectorAll("button,a,[role='button']")].filter(visible).map(el => ({
-        tag: el.tagName.toLowerCase(), text:(el.innerText||el.textContent||"").trim().replace(/\\s+/g," "), aria:el.getAttribute("aria-label")||"", disabled:el.hasAttribute("disabled")||el.getAttribute("aria-disabled")==="true"
+        tag: el.tagName.toLowerCase(), text:(el.innerText||el.textContent||"").trim().replace(/\s+/g," "), aria:el.getAttribute("aria-label")||"", disabled:el.hasAttribute("disabled")||el.getAttribute("aria-disabled")==="true"
       })).filter(x=>x.text||x.aria).slice(0,300);
-      const bookTickets=controls.filter(x=>/book\\s*tickets/i.test(`${x.text} ${x.aria}`)&&!x.disabled);
+      const bookTickets=controls.filter(x=>/book\s*tickets/i.test(`${x.text} ${x.aria}`)&&!x.disabled);
       return { title:document.title, url:location.href, bookTicketsVisible:bookTickets.length>0, bookTickets, pageText:(document.body?.innerText||"").slice(0,12000) };
     });
   } finally { await context.close(); }
@@ -50,6 +52,7 @@ async function inspect(url) {
 
 app.get("/health", (_,res)=>res.json({ok:true,service:"personal-alert-backend"}));
 app.post("/check", async (req,res)=>{
+  console.log(`Received check request for URL: ${req.body?.url}`, `Authorized: ${authorized(req)}`);
   if (!authorized(req)) return res.status(401).json({error:"Unauthorized"});
   const url=String(req.body?.url||"").trim();
   let u; try { u=new URL(url); } catch { return res.status(400).json({error:"Invalid URL"}); }
