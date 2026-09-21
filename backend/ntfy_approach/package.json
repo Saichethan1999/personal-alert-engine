@@ -1,0 +1,20 @@
+{
+  "name": "get-notified-bookmyshow",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Monitor BookMyShow morning showtimes and publish them to ntfy.",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js",
+    "test": "node --test tests/bot.test.js",
+    "test:notification": "node test-ntfy.js",
+    "install:browser": "playwright install chromium"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "dotenv": ">=16.4.0 <18.0.0",
+    "playwright": ">=1.50.0 <2.0.0"
+  }
+}
