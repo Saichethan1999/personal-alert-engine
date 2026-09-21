@@ -45,6 +45,7 @@ async function inspect(url) {
         tag: el.tagName.toLowerCase(), text:(el.innerText||el.textContent||"").trim().replace(/\s+/g," "), aria:el.getAttribute("aria-label")||"", disabled:el.hasAttribute("disabled")||el.getAttribute("aria-disabled")==="true"
       })).filter(x=>x.text||x.aria).slice(0,300);
       const bookTickets=controls.filter(x=>/book\s*tickets/i.test(`${x.text} ${x.aria}`)&&!x.disabled);
+      console.log({ title:document.title, url:location.href, bookTicketsVisible:bookTickets.length>0, bookTickets, pageText:(document.body?.innerText||"").slice(0,12000) })
       return { title:document.title, url:location.href, bookTicketsVisible:bookTickets.length>0, bookTickets, pageText:(document.body?.innerText||"").slice(0,12000) };
     });
   } finally { await context.close(); }
